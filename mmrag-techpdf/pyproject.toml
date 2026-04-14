@@ -1,0 +1,34 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mmrag-techpdf"
+version = "0.1.0"
+description = "Multimodal RAG system for technical PDFs"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+    "pydantic>=2.0",
+    "typer>=0.9",
+    "fastapi>=0.100",
+    "uvicorn>=0.23",
+    "pymupdf>=1.23",  # For PDF processing
+    "pillow>=10.0",   # Image processing
+    "numpy>=1.24",
+    "faiss-cpu>=1.7",  # Vector search
+    "sentence-transformers>=2.2",  # Embeddings
+    "transformers>=4.30",  # For captioning
+    "torch>=2.0",  # PyTorch
+    "camelot-py>=0.10",  # Table extraction
+    "opencv-python>=4.8",  # Image processing
+    "rank-bm25>=0.2",  # BM25 search
+    "cross-encoder>=0.1",  # Reranking
+    "openai>=1.0",  # OpenAI API
+]
+
+[project.scripts]
+mmrag = "mmrag.cli.main:app"
+
+[tool.setuptools.packages.find]
+where = ["src"]
