@@ -116,7 +116,8 @@ class TestLazyLoading:
         fake_model = MagicMock()
         fake_model.predict.return_value = [0.1, 0.2, 0.3]
 
-        with patch("mmrag.adapters.rerank.cross_encoder_reranker.CrossEncoder", return_value=fake_model) as mock_ce:
+        # CrossEncoder is a local import inside _get_model, so patch at source package level
+        with patch("sentence_transformers.CrossEncoder", return_value=fake_model) as mock_ce:
             r.rerank(Query(text="x"), artifacts, top_k=1)
             mock_ce.assert_called_once_with("cross-encoder/ms-marco-MiniLM-L-6-v2")
             assert r._model is fake_model
@@ -126,7 +127,7 @@ class TestLazyLoading:
         fake_model = MagicMock()
         fake_model.predict.return_value = [0.1, 0.2, 0.3]
 
-        with patch("mmrag.adapters.rerank.cross_encoder_reranker.CrossEncoder", return_value=fake_model) as mock_ce:
+        with patch("sentence_transformers.CrossEncoder", return_value=fake_model) as mock_ce:
             r.rerank(Query(text="x"), artifacts)
             r.rerank(Query(text="y"), artifacts)
             assert mock_ce.call_count == 1

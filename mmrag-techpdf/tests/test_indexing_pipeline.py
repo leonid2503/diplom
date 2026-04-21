@@ -146,7 +146,12 @@ class TestExtractTextArtifacts:
 
 class TestRun:
     def _make_full_pipeline(self, doc, text_artifacts=None, figure_artifacts=None, table_artifacts=None):
-        text_artifacts = text_artifacts or [make_artifact(id="t1", content="text chunk")]
+        """Build a pipeline with all heavy deps mocked.
+
+        If text_artifacts is provided, _extract_text_artifacts is patched to
+        return that list instead of parsing the document (which lets tests
+        control exactly which text artifacts flow through run()).
+        """
         figure_artifacts = figure_artifacts or []
         table_artifacts = table_artifacts or []
 
@@ -162,9 +167,9 @@ class TestRun:
         captioner = MagicMock()
         captioner.caption.return_value = "auto caption"
 
-        all_arts = text_artifacts + figure_artifacts + table_artifacts
+        # Dynamic embedding size so it matches however many artifacts run() produces
         embedder = MagicMock()
-        embedder.encode.return_value = np.ones((len(all_arts), 32), dtype=np.float32)
+        embedder.encode.side_effect = lambda texts: np.ones((len(texts), 32), dtype=np.float32)
 
         index_store = MagicMock()
         doc_store = MagicMock()
@@ -180,6 +185,11 @@ class TestRun:
             doc_store=doc_store,
             bm25_retriever=bm25_retriever,
         )
+
+        # Patch text extraction when caller wants to inject specific artifacts
+        if text_artifacts is not None:
+            pipeline._extract_text_artifacts = MagicMock(return_value=text_artifacts)
+
         return pipeline, doc_store, index_store, bm25_retriever
 
     def test_run_returns_all_artifacts(self, tmp_path):

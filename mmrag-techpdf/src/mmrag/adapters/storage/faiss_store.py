@@ -26,6 +26,8 @@ class FAISSStore(IndexStore):
 
     def search(self, query_embedding: np.ndarray, top_k: int = 10) -> List[Tuple[str, float]]:
         """Search for similar embeddings."""
+        if not self.ids:
+            return []
         # Normalize query
         norm = np.linalg.norm(query_embedding)
         normalized_query = query_embedding / norm

@@ -107,7 +107,7 @@ class TestRetrieve:
         r.retrieve(Query(text="x"), top_k=50)
         # min(50*3, 100) = 100
         _, kwargs = index_store.search.call_args
-        assert kwargs.get("top_k", index_store.search.call_args[0][1]) == 100
+        assert kwargs["top_k"] == 100
 
 
 class TestRRFConstants:

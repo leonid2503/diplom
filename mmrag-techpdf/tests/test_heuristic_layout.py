@@ -25,19 +25,20 @@ class TestClassifyTextBlock:
         assert analyzer._classify_text_block(text, lines) == "text"
 
     def test_many_tabs_triggers_table(self, analyzer):
-        # More than 4 tab characters → table
-        text = "col1\tcol2\tcol3\tcol4\tcol5"
+        # More than 4 tab characters → table; need 5 tabs = 6 columns
+        text = "c1\tc2\tc3\tc4\tc5\tc6"
         lines = _make_lines(2)
         assert analyzer._classify_text_block(text, lines) == "table"
 
     def test_exactly_four_tabs_is_text(self, analyzer):
         # 4 tabs is NOT > 4, so stays text
-        text = "a\tb\tc\td"
+        text = "a\tb\tc\td\te"
         lines = _make_lines(2)
         assert analyzer._classify_text_block(text, lines) == "text"
 
     def test_five_tabs_is_table(self, analyzer):
-        text = "a\tb\tc\td\te"
+        # 5 tabs = 6 items → triggers table
+        text = "a\tb\tc\td\te\tf"
         lines = _make_lines(2)
         assert analyzer._classify_text_block(text, lines) == "table"
 
